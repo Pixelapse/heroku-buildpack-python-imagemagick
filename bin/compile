@@ -114,6 +114,12 @@ UFRAW_URL="https://download-pixelapse.s3.amazonaws.com/ufraw-bin-$UFRAW_VERSION.
 puts-step "Bundling ufraw version $UFRAW_VERSION"
 curl --silent --max-time 60 --location "$UFRAW_URL" | tar xz -C $IM_LOCATION
 
+# pdfinfo dependency
+PDFINFO_VERSION="3.03"
+PDFINFO_URL="https://download-pixelapse.s3.amazonaws.com/pdfinfo-bin-$PDFINFO_VERSION.tar.gz"
+puts-step "Bundling pdfinfo version $PDFINFO_VERSION"
+curl --silent --max-time 60 --location "$PDFINFO_URL" | tar xz -C $IM_LOCATION
+
 # ### Sanity Checks
 #
 # Just a little peace of mind.
