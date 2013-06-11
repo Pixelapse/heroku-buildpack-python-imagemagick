@@ -92,33 +92,40 @@ function puts-warn (){
 # Switch to the repo's context.
 cd $BUILD_DIR
 
+# config
+S3_BUCKET="download-pixelapse"
 IM_LOCATION="im"
-
 mkdir -p $IM_LOCATION
 
 # Install ImageMagick
 IM_VERSION="6.7.8-10"
-IM_URL="https://download-pixelapse.s3.amazonaws.com/im-$IM_VERSION.tar.gz"
+IM_URL="https://${S3_BUCKET}.s3.amazonaws.com/im-${IM_VERSION}.tar.gz"
 puts-step "Bundling ImageMagick version $IM_VERSION"
 curl --silent --max-time 60 --location "$IM_URL" | tar xz -C $IM_LOCATION
 
 # Install ghostscript
 GS_VERSION="9.07"
-GS_URL="https://download-pixelapse.s3.amazonaws.com/gs-$GS_VERSION.tar.gz"
+GS_URL="https://${S3_BUCKET}.s3.amazonaws.com/gs-${GS_VERSION}.tar.gz"
 puts-step "Bundling ghostscript version $GS_VERSION"
 curl --silent --max-time 60 --location "$GS_URL" | tar xz -C $IM_LOCATION
 
 # ufraw dependency
 UFRAW_VERSION="0.18"
-UFRAW_URL="https://download-pixelapse.s3.amazonaws.com/ufraw-bin-$UFRAW_VERSION.tar.gz"
+UFRAW_URL="https://${S3_BUCKET}.s3.amazonaws.com/ufraw-bin-${UFRAW_VERSION}.tar.gz"
 puts-step "Bundling ufraw version $UFRAW_VERSION"
 curl --silent --max-time 60 --location "$UFRAW_URL" | tar xz -C $IM_LOCATION
 
 # pdfinfo dependency
 PDFINFO_VERSION="3.03"
-PDFINFO_URL="https://download-pixelapse.s3.amazonaws.com/pdfinfo-bin-$PDFINFO_VERSION.tar.gz"
+PDFINFO_URL="https://${S3_BUCKET}.s3.amazonaws.com/pdfinfo-bin-${PDFINFO_VERSION}.tar.gz"
 puts-step "Bundling pdfinfo version $PDFINFO_VERSION"
 curl --silent --max-time 60 --location "$PDFINFO_URL" | tar xz -C $IM_LOCATION
+
+# PhantomJS dependency
+PHANTOMJS_VERSION="1.9.0"
+PHANTOMJS_URL="https://${S3_BUCKET}.s3.amazonaws.com/buildpack-phantomjs-${PHANTOMJS_VERSION}.tar.gz"
+puts-step "Bundling phantomjs version $PHANTOMJS_VERSION"
+curl --silent --max-time 60 --location "$PHANTOMJS_URL" | tar xz -C $IM_LOCATION
 
 # ### Sanity Checks
 #
