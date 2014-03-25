@@ -12,7 +12,7 @@ cat <<EOF
 config_vars:
   PATH: /app/.heroku/python/bin:/app/im/bin:/bin:/usr/local/bin:/usr/bin
   PYTHONUNBUFFERED: true
-  LIBRARY_PATH: /app/.heroku/vendor/lib
+  LIBRARY_PATH: /app/.heroku/vendor/lib:/app/im/lib
   LD_LIBRARY_PATH: /app/.heroku/vendor/lib:/app/im/lib
   MAGICK_HOME: /app/im
   LANG: en_US.UTF-8
