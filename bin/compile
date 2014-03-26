@@ -131,6 +131,12 @@ PHANTOMJS_URL="https://${S3_BUCKET}.s3.amazonaws.com/buildpack-phantomjs-${PHANT
 puts-step "Bundling phantomjs version $PHANTOMJS_VERSION"
 curl --silent --max-time 60 --location "$PHANTOMJS_URL" | tar xz -C $IM_LOCATION
 
+# LittleCMS dependency - for Pillow / PSD tools
+LITTLECMS_VERSION="2.6"
+LITTLECMS_URL="https://${S3_BUCKET}.s3.amazonaws.com/lcms-${LITTLECMS_VERSION}.tar.gz"
+puts-step "Bundling littlecms version $LITTLECMS_VERSION"
+curl --silent --max-time 60 --location "$LITTLECMS_URL" | tar xz -C $IM_LOCATION
+
 # If no requirements given, assume `setup.py develop`.
 if [ ! -f requirements.txt ]; then
   puts-step "No requirements.txt provided; assuming dist package."
