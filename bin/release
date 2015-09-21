@@ -14,13 +14,14 @@ config_vars:
   PYTHONUNBUFFERED: true
   LIBRARY_PATH: /app/.heroku/vendor/lib
   LD_LIBRARY_PATH: /app/.heroku/vendor/lib:/app/im/lib
-  MAGICK_HOME: /app/im
   LANG: en_US.UTF-8
   PYTHONHASHSEED: random
   PYTHONHOME: /app/.heroku/python/
   PYTHONPATH: /app/
 EOF
 
+# used to be part of `config_vars` above
+# MAGICK_HOME: /app/im
 
 
 if [[ $MANAGE_FILE ]]; then
