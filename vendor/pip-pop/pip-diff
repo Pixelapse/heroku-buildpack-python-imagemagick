@@ -12,11 +12,27 @@ Options:
 """
 import os
 from docopt import docopt
-from pip.req import parse_requirements
-from pip.index import PackageFinder
-from pip._vendor.requests import session
+
+try:  # pip >= 10
+    from pip._internal.req import parse_requirements
+    from pip._internal.download import PipSession as session
+
+    def PackageFinder(find_links, index_urls, session=None):
+        from pip._internal.index import PackageFinder
+        from pip._internal.models.search_scope import SearchScope
+        from pip._internal.models.selection_prefs import SelectionPreferences
+
+        search_scope = SearchScope.create(find_links, index_urls)
+        selection_prefs = SelectionPreferences(allow_yanked=False)
+        return PackageFinder.create(search_scope, selection_prefs, session=session)
+
+except ImportError:  # pip <= 9.0.3
+    from pip.req import parse_requirements
+    from pip.index import PackageFinder
+    from pip._vendor.requests import session
 
 requests = session()
+
 
 class Requirements(object):
     def __init__(self, reqfile=None):
@@ -31,13 +47,16 @@ class Requirements(object):
         return '<Requirements \'{}\'>'.format(self.path)
 
     def load(self, reqfile):
-
         if not os.path.exists(reqfile):
             raise ValueError('The given requirements file does not exist.')
 
         finder = PackageFinder([], [], session=requests)
         for requirement in parse_requirements(reqfile, finder=finder, session=requests):
             if requirement.req:
+                if not getattr(requirement.req, 'name', None):
+                    # Prior to pip 8.1.2 the attribute `name` did not exist.
+                    requirement.req.name = requirement.req.project_name
+                    requirement.req.name = requirement.req.name.lower()
                 self.requirements.append(requirement.req)
 
 
@@ -48,24 +67,24 @@ class Requirements(object):
 
         # Generate fresh packages.
         other_reqs = (
-            [r.project_name for r in r1.requirements]
+            [r.name for r in r1.requirements]
             if ignore_versions else r1.requirements
         )
 
         for req in r2.requirements:
-            r = req.project_name if ignore_versions else req
+            r = req.name if ignore_versions else req
 
             if r not in other_reqs and r not in excludes:
                 results['fresh'].append(req)
 
         # Generate stale packages.
         other_reqs = (
-            [r.project_name for r in r2.requirements]
+            [r.name for r in r2.requirements]
             if ignore_versions else r2.requirements
         )
 
         for req in r1.requirements:
-            r = req.project_name if ignore_versions else req
+            r = req.name if ignore_versions else req
 
             if r not in other_reqs and r not in excludes:
                 results['stale'].append(req)
@@ -73,11 +92,7 @@ class Requirements(object):
         return results
 
 
-
-
-
 def diff(r1, r2, include_fresh=False, include_stale=False, excludes=None):
-
     include_versions = True if include_stale else False
     excludes = excludes if len(excludes) else []
 
@@ -92,12 +107,11 @@ def diff(r1, r2, include_fresh=False, include_stale=False, excludes=None):
 
     if include_fresh:
         for line in results['fresh']:
-            print(line.project_name if include_versions else line)
+            print(line.name if include_versions else line)
 
     if include_stale:
         for line in results['stale']:
-            print(line.project_name if include_versions else line)
-
+            print(line.name if include_versions else line)
 
 
 def main():
@@ -112,7 +126,6 @@ def main():
     }
 
     diff(**kwargs)
-
 
 
 if __name__ == '__main__':
