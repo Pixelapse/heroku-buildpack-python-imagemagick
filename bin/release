@@ -1,33 +1,22 @@
 #!/usr/bin/env bash
 # bin/release <build-dir>
 
-BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 BUILD_DIR=$1
 
-MANAGE_FILE=$(cd $BUILD_DIR && find . -maxdepth 3 -type f -name 'manage.py' | head -1)
+MANAGE_FILE=$(cd "$BUILD_DIR" && find . -maxdepth 3 -type f -name 'manage.py' | head -1)
 MANAGE_FILE=${MANAGE_FILE:2}
 
 cat <<EOF
 ---
 config_vars:
-  PATH: /app/.heroku/python/bin:/app/im/bin:/bin:/usr/local/bin:/usr/bin
-  PYTHONUNBUFFERED: true
-  LIBRARY_PATH: /app/.heroku/vendor/lib
-  LD_LIBRARY_PATH: /app/.heroku/vendor/lib:/app/im/lib
-  LANG: en_US.UTF-8
-  PYTHONHASHSEED: random
-  PYTHONHOME: /app/.heroku/python/
-  PYTHONPATH: /app/
-EOF
 
-# used to be part of `config_vars` above
-# MAGICK_HOME: /app/im
+EOF
 
 
 if [[ $MANAGE_FILE ]]; then
 cat <<EOF
 
 addons:
-  heroku-postgresql:hobby-dev
+  - heroku-postgresql
 EOF
 fi
